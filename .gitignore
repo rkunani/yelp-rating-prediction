@@ -1,0 +1,8 @@
+yelp_dataset/
+checkpoint/
+out/
+**/.ipynb_checkpoints/
+**/__pycache__/
+**/wandb/
+
+*.gdoc

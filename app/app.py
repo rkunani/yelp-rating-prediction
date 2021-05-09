@@ -6,11 +6,9 @@ import torch
 
 app = Flask(__name__)
 
-print("Instantiating model + tokenizer...")
 model = Model()    # randomly initialized classification head
 model.eval()
 tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-cased')
-print("Instantiated model + tokenizer")
 
 @app.route('/')
 def hello_world():
@@ -37,7 +35,7 @@ def predict():
   if request.method == 'GET':
     return 'Please send a POST request to /predict'
   if request.method == 'POST':
-    print(f"Received {type(request.json)}: {request.json}")
+    review = request.json['review']
     if review is None:
       return jsonify({"pred_stars": "0"})
-    return jsonify({'review': review, 'pred_stars': get_prediction(review)})
+    return jsonify({'review': review}) #, 'pred_stars': get_prediction(review)})

@@ -40,7 +40,9 @@ def predict():
   if request.method == 'GET':
     return 'Please send a POST request to /predict'
   if request.method == 'POST':
-    review = (request.json)['review']
+    data = request.json
+    print(f"received {type(data)}: {data}")
+    review = data['review']
     print(review)
     if review is None:
       return jsonify({"pred_stars": "0"})

@@ -16,6 +16,7 @@ def hello_world():
 
 def get_prediction(review):
   # Tokenize input
+  print("encoding review...")
   encoding = tokenizer(review)
   print("encoded review")
 
@@ -26,6 +27,7 @@ def get_prediction(review):
 
   # Get model predictions
   with torch.no_grad():
+    print("starting model forward pass...")
     outputs = model(input_ids, attention_mask=attention_mask)
     print("finished model forward pass")
   pred_labels = torch.argmax(outputs['logits'], dim=1)

@@ -4,20 +4,19 @@ Defines a model.
 
 import torch
 import torch.nn as nn
-from transformers import BertForSequenceClassification, DistilBertForSequenceClassification
-from utils import set_seed, RATINGS
+from transformers import DistilBertForSequenceClassification
+from utils import set_seed, RATINGS, get_device
 from tqdm import tqdm
 import numpy as np
 from datetime import datetime
 
 MODEL_CLASSES = {
   'distilbert-base-cased': DistilBertForSequenceClassification,
-  'bert-base-cased': BertForSequenceClassification
 }
 
 class Model(nn.Module):
     
-    def __init__(self, model_type='distilbert-base-cased'):
+    def __init__(self, model_type='distilbert-base-cased', checkpoint_path=None):
         super(Model, self).__init__()
         # See https://huggingface.co/transformers/pretrained_models.html
         # for description of model_type
@@ -26,9 +25,10 @@ class Model(nn.Module):
         set_seed(24)    # This is required bc from_pretrained initializes the classification head with random weights
         self.lm = MODEL_CLASSES[self.model_type].from_pretrained(
             self.model_type,
-            num_labels=len(RATINGS),     # 11 different possible ratings
+            num_labels=len(RATINGS),     # 5 different possible ratings
         )
-        # TODO: add option to create model from checkpoint
+        if checkpoint_path:
+          self.lm.load_state_dict(torch.load(checkpoint_path, map_location=get_device()))
 
 
     def forward(self, batch_input, **model_args):
@@ -47,6 +47,8 @@ class Model(nn.Module):
         outputs = self.lm(batch_input, attention_mask=attention_mask, labels=labels, return_dict=True)
         return outputs
 
+    # pytorch actually takes care of everything below so it's not necessary
+    # but the already generated checkpoints depend on the code below
     
     def state_dict(self):
         """

@@ -2,8 +2,21 @@ import torch
 import numpy as np
 import random, json
 from tqdm import tqdm
-from transformers import BertTokenizer, DistilBertTokenizer
+from transformers import DistilBertTokenizer
 from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
+
+def get_device():
+    """
+    Returns the appropriate device for the environment.
+    Most likely, the device will be CUDA in training and CPU in production.
+    """
+    if torch.cuda.is_available():        
+        device = torch.device("cuda")
+        print('Use GPU:', torch.cuda.get_device_name(0))
+    else:
+        device = torch.device("cpu")
+        print('No GPU available, using CPU instead.')
+    return device
 
 def set_seed(seed=None):
     """
@@ -21,7 +34,6 @@ def set_seed(seed=None):
 
 TOKENIZER_CLASSES = {
   'distilbert-base-cased': DistilBertTokenizer,
-  'bert-base-cased': BertTokenizer
 }
 
 def get_dataloader(data_file, model_type, batch_size=32, num_points=None, val_size=None):

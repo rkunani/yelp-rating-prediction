@@ -9,3 +9,4 @@ tqdm
 transformers
 wandb
 flask
+gunicorn

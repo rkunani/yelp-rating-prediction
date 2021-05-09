@@ -32,10 +32,13 @@ def get_prediction(review):
   pred = pred_ratings[0]
   return pred
 
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['GET', 'POST'])
 def predict():
-    if request.method == 'POST':
-        review = request.json['review']
-        if review is None:
-          return jsonify({"pred_stars": "0"})
-        return jsonify({'review': review, 'pred_stars': get_prediction(review)})
+  if request.method == 'GET':
+    return 'Please send a POST request'
+  if request.method == 'POST':
+      review = request.json['review']
+      print(f"Review: {review}")
+      if review is None:
+        return jsonify({"pred_stars": "0"})
+      return jsonify({'review': review, 'pred_stars': get_prediction(review)})

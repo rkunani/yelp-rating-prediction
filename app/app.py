@@ -16,15 +16,19 @@ def hello_world():
 
 def get_prediction(review):
   # Tokenize input
+  print("encoding review...")
   encoding = tokenizer(review)
 
   # Add dummy batch dimension to inputs for model
+  print("adding dummy batch dim...")
   input_ids = torch.tensor(encoding['input_ids']).unsqueeze(0)
   attention_mask = torch.tensor(encoding['attention_mask']).unsqueeze(0)
 
   # Get model predictions
   with torch.no_grad():
+    print("starting forward pass...")
     outputs = model(input_ids, attention_mask=attention_mask)
+  print("processing logits...")
   pred_labels = torch.argmax(outputs['logits'], dim=1)
   pred_ratings = labels_to_ratings(pred_labels)
   pred = pred_ratings[0]
@@ -37,8 +41,6 @@ def predict():
   if request.method == 'POST':
     print("In /predict endpoint")
     review = (request.json)['review']
-    return jsonify({'review': review})
-    if review is None:
-      return jsonify({"pred_stars": "0"})
+    print(f"Review: {review}")
     pred = get_prediction(review)
-    return jsonify({'review': review}) #, 'pred_stars': str(pred)})
+    return jsonify({'review': review, 'pred_stars': str(pred)})

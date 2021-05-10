@@ -8,7 +8,11 @@ app = Flask(__name__)
 
 model = Model()    # randomly initialized classification head
 model.eval()
-model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)
+model = torch.quantization.quantize_dynamic(
+  model,
+  {torch.nn.Linear, torch.nn.LayerNorm, torch.nn.Embedding},
+  dtype=torch.qint8
+)
 tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-cased')
 
 @app.route('/')
@@ -26,7 +30,9 @@ def get_prediction(review):
   # Get model predictions
   with torch.no_grad():
     # TODO: Speed this up (TorchScript, weight quantization)
+    print("starting forward pass...", flush=True)
     outputs = model(input_ids, attention_mask=attention_mask)
+    print("finished forward pass")
   pred_labels = torch.argmax(outputs['logits'], dim=1)
   pred_ratings = labels_to_ratings(pred_labels)
   pred = pred_ratings[0]

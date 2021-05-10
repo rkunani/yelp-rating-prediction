@@ -5,6 +5,11 @@ from tqdm import tqdm
 from transformers import DistilBertTokenizer
 from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
 
+def print_size_of_model(model):
+    torch.save(model.state_dict(), "temp.p")
+    print('Size (MB):', os.path.getsize("temp.p")/1e6, flush=True)
+    os.remove('temp.p')
+
 def get_device():
     """
     Returns the appropriate device for the environment.

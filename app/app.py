@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from model import Model
-from utils import labels_to_ratings, get_device
+from utils import labels_to_ratings, get_device, print_size_of_model
 from transformers import DistilBertTokenizer
 import torch
 
@@ -8,11 +8,13 @@ app = Flask(__name__)
 
 model = Model()    # randomly initialized classification head
 model.eval()
+print_size_of_model(model)
 model = torch.quantization.quantize_dynamic(
   model,
   {torch.nn.Linear, torch.nn.LayerNorm, torch.nn.Embedding},
   dtype=torch.qint8
 )
+print_size_of_model(model)
 tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-cased')
 
 @app.route('/')

@@ -3,6 +3,7 @@ from model import Model
 from utils import labels_to_ratings, get_device, print_size_of_model
 from transformers import DistilBertTokenizer
 import torch
+torch.set_num_threads(1)
 
 app = Flask(__name__)
 

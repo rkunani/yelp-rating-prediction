@@ -8,6 +8,7 @@ app = Flask(__name__)
 
 model = Model()    # randomly initialized classification head
 model.eval()
+model = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)
 tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-cased')
 
 @app.route('/')
@@ -16,19 +17,16 @@ def hello_world():
 
 def get_prediction(review):
   # Tokenize input
-  print("encoding review...", flush=True)
   encoding = tokenizer(review)
 
   # Add dummy batch dimension to inputs for model
-  print("adding dummy batch dim...", flush=True)
   input_ids = torch.tensor(encoding['input_ids']).unsqueeze(0)
   attention_mask = torch.tensor(encoding['attention_mask']).unsqueeze(0)
 
   # Get model predictions
   with torch.no_grad():
-    print("starting forward pass...", flush=True)
+    # TODO: Speed this up (TorchScript, weight quantization)
     outputs = model(input_ids, attention_mask=attention_mask)
-  print("processing logits...", flush=True)
   pred_labels = torch.argmax(outputs['logits'], dim=1)
   pred_ratings = labels_to_ratings(pred_labels)
   pred = pred_ratings[0]
@@ -39,8 +37,6 @@ def predict():
   if request.method == 'GET':
     return 'Please send a POST request to /predict'
   if request.method == 'POST':
-    print("In /predict endpoint", flush=True)
     review = (request.json)['review']
-    print(f"Review: {review}", flush=True)
     pred = get_prediction(review)
     return jsonify({'review': review, 'pred_stars': str(pred)})

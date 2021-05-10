@@ -37,6 +37,7 @@ def predict():
   if request.method == 'POST':
     print("In /predict endpoint")
     review = (request.json)['review']
+    return jsonify({'review': review})
     if review is None:
       return jsonify({"pred_stars": "0"})
     pred = get_prediction(review)

@@ -29,6 +29,7 @@ class Model(nn.Module):
         )
         if checkpoint_path:
           self.lm.load_state_dict(torch.load(checkpoint_path, map_location=get_device()))
+        # TODO: Figure out how to load checkpoint from URL
 
 
     def forward(self, batch_input, **model_args):

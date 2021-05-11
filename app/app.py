@@ -7,7 +7,10 @@ torch.set_num_threads(1)  # For quantization to work in deployment
 
 app = Flask(__name__)
 
-model = Model("/models/model.pkl")  # manually placed on server
+model = Model(
+  model_type='distilbert-base-cased',
+  checkpoint_path="/models/model.pkl",  # manually placed on server
+)
 model.eval()
 model = torch.quantization.quantize_dynamic(
   model,

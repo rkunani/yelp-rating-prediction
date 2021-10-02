@@ -1,6 +1,12 @@
 # Yelp Rating Prediction
 
-Final project for Full Stack Deep Learning at UC Berkeley.
+Final project for Full Stack Deep Learning at UC Berkeley in Spring 2021. My project report can be found [here](https://raguvir.me/fsdl.pdf).
+
+You can interact with the model by sending a cURL request:
+
+```
+curl -X POST https://yelp-model.onrender.com/predict --header 'Content-Type: application/json' --data-raw '{"review": "I love this restaurant."}'
+```
 
 ## Project Vision
 
